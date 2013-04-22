@@ -10,10 +10,10 @@ class CacheInvalidatorPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-		$definition = $container->getDefinition('easytek.doctrine_cache_invalidator');
-		
-        foreach($container->findTaggedServiceIds('easytek.doctrine_cache_invalidation') as $id => $attributes) {
-			$definition->addMethodCall('addService', array(new Reference($id)));
-	    }
+        $definition = $container->getDefinition('easytek.doctrine_cache_invalidator');
+
+        foreach ($container->findTaggedServiceIds('easytek.doctrine_cache_invalidation') as $id => $attributes) {
+            $definition->addMethodCall('addService', array(new Reference($id)));
+        }
     }
 }

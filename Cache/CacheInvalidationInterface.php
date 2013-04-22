@@ -4,8 +4,8 @@ namespace Easytek\DoctrineCacheInvalidatorBundle\Cache;
 
 interface CacheInvalidationInterface
 {
-	/**
-	 * @return array
-	 */
-	public function getClasses();
+    /**
+     * @return array
+     */
+    public function getClasses();
 }
