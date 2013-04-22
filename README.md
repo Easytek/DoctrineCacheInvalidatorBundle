@@ -51,7 +51,7 @@ Then you add it in your services file configuration :
 
 ```yml
     easytek.symforum.cache_invalidation:
-        class: Easytek\SymforumBundle\Cache\CacheInvalidation
+        class: You\YourBundle\Cache\CacheInvalidation
         tags:
             - { name: easytek.doctrine_cache_invalidation }
 ```
