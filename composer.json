@@ -1,0 +1,25 @@
+{
+    "name": "easytek/doctrine-cache-invalidator-bundle",
+    "type": "symfony-bundle",
+    "description": "Invalidate easily your doctrine cache",
+    "keywords": ["doctrine", "cache", "invalidation"],
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Jérémy CROMBEZ",
+            "homepage": "http://www.easytek.fr"
+        }
+    ],
+
+    "require": {
+        "php": ">=5.3.2",
+        "doctrine/orm": "*",
+    },
+    
+    "autoload": {
+        "psr-0": { "Easytek\\DoctrineCacheInvalidatorBundle": "" }
+    },
+
+    "target-dir": "Easytek/DoctrineCacheInvalidatorBundle"
+}
