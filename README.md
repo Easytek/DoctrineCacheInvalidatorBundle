@@ -12,10 +12,6 @@ This bundle is still a work in progress.
 
 ## Install ##
 
-```
-composer require "jcrombez/doctrine-cache-invalidator-bundle:dev-master"
-```
-
 This bundle is not yet on packagist, so you have to add its repository to your composer.json like so :
 
 ```json
@@ -25,6 +21,11 @@ This bundle is not yet on packagist, so you have to add its repository to your c
             "url": "https://github.com/jcrombez/DoctrineCacheInvalidatorBundle.git"
         }
     ],
+```
+Then run :
+
+```
+composer require "easytek/doctrine-cache-invalidator-bundle:dev-master"
 ```
 
 ## Use ##
