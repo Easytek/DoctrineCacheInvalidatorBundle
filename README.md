@@ -49,7 +49,11 @@ class CacheInvalidation implements CacheInvalidationInterface
 
 Then you add it in your services file configuration :
 
-```xml
+```yml
+    easytek.symforum.cache_invalidation:
+        class: Easytek\SymforumBundle\Cache\CacheInvalidation
+        tags:
+            - { name: easytek.doctrine_cache_invalidation }
 ```
 
 Then you have to fill the array returned by the getClasses method of your service.
