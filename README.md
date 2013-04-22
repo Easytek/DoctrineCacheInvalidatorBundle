@@ -50,7 +50,7 @@ class CacheInvalidation implements CacheInvalidationInterface
 Then you add it in your services file configuration :
 
 ```yml
-    easytek.symforum.cache_invalidation:
+    you.yourbundle.cache_invalidation:
         class: You\YourBundle\Cache\CacheInvalidation
         tags:
             - { name: easytek.doctrine_cache_invalidation }
