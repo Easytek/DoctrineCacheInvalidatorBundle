@@ -4,11 +4,21 @@ namespace Easytek\DoctrineCacheInvalidatorBundle\Cache;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\EntityManager;
+use Psr\Log\LoggerInterface;
 
 class CacheInvalidator
 {
+	/**
+	 * @var LoggerInterface
+	 */
+	protected $logger;
     protected $cacheInvalidationServices = array();
     protected $classes = array();
+    
+    public function __construct(LoggerInterface $logger)
+    {
+    	$this->logger = $logger;
+    }
 
     public function addService(CacheInvalidationInterface $cacheInvalidation)
     {
@@ -42,7 +52,7 @@ class CacheInvalidator
                 }
             }
         }
-
+        
         $this->clearCache($em, $cacheIds);
     }
 
@@ -62,6 +72,8 @@ class CacheInvalidator
             }
 
             $resultCache->delete($cacheId);
+            
+            $this->logger->info('[DoctrineCacheInvalidatorBundle] cache key "' . $cacheId . '" cleared.');
         }
     }
 
