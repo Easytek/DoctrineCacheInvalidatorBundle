@@ -61,7 +61,7 @@ Then you have to fill the array returned by the getClasses method of your servic
 The array contains a key for each doctrine entity class you want to work on.
 This key is associated with an array of invalidation rules, each invalidation rule is also an array, containing the two following informations :
 
-- The cache id pattern, wich can contains {attribute}, the same way you do in twig, but you can chain calls.
+- The cache id pattern, wich can contains {attribute}, the same way you do in twig, but you can't chain calls.
 - The entity changes triggering the invalidation, it can be "insert", "update", "delete" or "*" wich regroup the first three.
 
 Example :
