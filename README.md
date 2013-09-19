@@ -5,7 +5,6 @@ Invalidate your doctrine cache easily.
 This bundle is still a work in progress.
 
 ## ToDo ##
-- Being able to chain methods calls in patterns, like in twig.
 - Define the invalidations rules in the bundle configuration instead of a class ?
 - Add some tests.
 - Add Doctrine 2.3 wildcard invalidation syntax.
@@ -61,7 +60,7 @@ Then you have to fill the array returned by the getClasses method of your servic
 The array contains a key for each doctrine entity class you want to work on.
 This key is associated with an array of invalidation rules, each invalidation rule is also an array, containing the two following informations :
 
-- The cache id pattern, wich can contains {attribute}, the same way you do in twig, but you can't chain calls.
+- The cache id pattern, which can contain {attribute}, the same way you do in Twig.
 - The entity changes triggering the invalidation, it can be "insert", "update", "delete" or "*" wich regroup the first three.
 
 Example :

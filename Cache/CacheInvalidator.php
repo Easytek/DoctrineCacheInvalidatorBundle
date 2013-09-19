@@ -14,7 +14,7 @@ class CacheInvalidator
 	protected $logger;
     protected $cacheInvalidationServices = array();
     protected $classes = array();
-    
+
     public function __construct(LoggerInterface $logger)
     {
     	$this->logger = $logger;
@@ -52,7 +52,7 @@ class CacheInvalidator
                 }
             }
         }
-        
+
         $this->clearCache($em, $cacheIds);
     }
 
@@ -72,7 +72,7 @@ class CacheInvalidator
             }
 
             $resultCache->delete($cacheId);
-            
+
             $this->logger->info('[DoctrineCacheInvalidatorBundle] cache key "' . $cacheId . '" cleared.');
         }
     }
@@ -103,17 +103,31 @@ class CacheInvalidator
 
         $mapping = array();
 
-        foreach ($match[1] as $k => $attribute) {
-            $getter = 'get'.ucfirst($attribute);
+        foreach ($match[1] as $k => $attributeSpec) {
+            $currentEntity = $entity;
+            $attributeValue = null;
+            $attributeChain = explode('.', $attributeSpec);
 
-            if (!method_exists($entity, $getter)) {
-                throw new \Exception(sprintf(
-                    'The cache id pattern "%s" need a "%s" value but the current "%s" object does not have a "%s" method.',
-                    $pattern, $attribute, get_class($entity), $getter
-                ));
+            foreach ($attributeChain as $attribute) {
+                $getter = 'get'.ucfirst($attribute);
+
+                if (!is_object($currentEntity)) {
+                    throw new \Exception(sprintf(
+                        'The cache id pattern "%s" needs a "%s" value but the value of "%s" is not an object.',
+                        $pattern, $attributeSpec, $attribute
+                    ));
+                } elseif (!method_exists($currentEntity, $getter)) {
+                    throw new \Exception(sprintf(
+                        'The cache id pattern "%s" needs a "%s" value but the current "%s" object does not have a "%s" method.',
+                        $pattern, $attributeSpec, get_class($currentEntity), $getter
+                    ));
+                }
+
+                $attributeValue = $currentEntity->$getter();
+                $currentEntity = $attributeValue;
             }
 
-            $mapping[$match[0][$k]] = $entity->$getter();
+            $mapping[$match[0][$k]] = $attributeValue;
         }
 
         $key = strtr($pattern, $mapping);
