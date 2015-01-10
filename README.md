@@ -11,20 +11,8 @@ This bundle is still a work in progress.
 
 ## Install ##
 
-This bundle is not yet on packagist, so you have to add its repository to your composer.json like so :
-
-```json
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jcrombez/DoctrineCacheInvalidatorBundle.git"
-        }
-    ],
 ```
-Then run :
-
-```
-composer require "easytek/doctrine-cache-invalidator-bundle:dev-master"
+composer require "easytek/doctrine-cache-invalidator-bundle" "dev-master"
 ```
 
 ## Use ##
