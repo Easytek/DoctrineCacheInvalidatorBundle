@@ -2,6 +2,7 @@
 
 namespace Easytek\DoctrineCacheInvalidatorBundle\Cache;
 
+use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\EntityManager;
 use Psr\Log\LoggerInterface;
@@ -58,17 +59,23 @@ class CacheInvalidator
 
     /**
      * We walk through the cache ids and call the result cache implementation delete*() methods to invalidate each stored cache id
+     *
+     * @param EntityManager $em
      * @param array $cacheIds
      */
     protected function clearCache(EntityManager $em, $cacheIds)
     {
         $cacheIds = array_unique($cacheIds);
 
+        /**
+         * @var $resultCache CacheProvider
+         */
         $resultCache = $em->getConfiguration()->getResultCacheImpl();
 
         foreach ($cacheIds as $cacheId) {
             if ($cacheId == '*') {
                 $resultCache->deleteAll();
+                continue;
             }
 
             $resultCache->delete($cacheId);
@@ -79,7 +86,9 @@ class CacheInvalidator
 
     /**
      * Return an array of cache id patterns for a given class and a given change type (update, insert, delete)
-     * @param  string $change
+     *
+     * @param string $class
+     * @param string $change
      * @return array
      */
     protected function getPatternByChange($class, $change)
@@ -99,38 +108,50 @@ class CacheInvalidator
 
     protected function generateCacheId($pattern, $entity)
     {
-        preg_match_all('/{([^}]+)}/', $pattern, $match);
+        // Does the pattern contains "variables" parts
+        if (preg_match_all('/{([^}]+)}/', $pattern, $match)) {
+            $mapping = [];
 
-        $mapping = array();
+            foreach ($match[1] as $k => $attributeSpec) {
+                $currentEntity = $entity;
+                $attributeValue = null;
+                $attributeChain = explode('.', $attributeSpec);
 
-        foreach ($match[1] as $k => $attributeSpec) {
-            $currentEntity = $entity;
-            $attributeValue = null;
-            $attributeChain = explode('.', $attributeSpec);
+                foreach ($attributeChain as $attribute) {
+                    $getter = 'get'.ucfirst($attribute);
 
-            foreach ($attributeChain as $attribute) {
-                $getter = 'get'.ucfirst($attribute);
+                    if (!is_object($currentEntity)) {
+                        throw new \Exception(
+                            sprintf(
+                                'The cache id pattern "%s" needs a "%s" value but the value of "%s" is not an object.',
+                                $pattern,
+                                $attributeSpec,
+                                $attribute
+                            )
+                        );
+                    } elseif (!method_exists($currentEntity, $getter)) {
+                        throw new \Exception(
+                            sprintf(
+                                'The cache id pattern "%s" needs a "%s" value but the current "%s" object does not have a "%s" method.',
+                                $pattern,
+                                $attributeSpec,
+                                get_class($currentEntity),
+                                $getter
+                            )
+                        );
+                    }
 
-                if (!is_object($currentEntity)) {
-                    throw new \Exception(sprintf(
-                        'The cache id pattern "%s" needs a "%s" value but the value of "%s" is not an object.',
-                        $pattern, $attributeSpec, $attribute
-                    ));
-                } elseif (!method_exists($currentEntity, $getter)) {
-                    throw new \Exception(sprintf(
-                        'The cache id pattern "%s" needs a "%s" value but the current "%s" object does not have a "%s" method.',
-                        $pattern, $attributeSpec, get_class($currentEntity), $getter
-                    ));
+                    $attributeValue = $currentEntity->$getter();
+                    $currentEntity = $attributeValue;
                 }
 
-                $attributeValue = $currentEntity->$getter();
-                $currentEntity = $attributeValue;
+                $mapping[$match[0][$k]] = $attributeValue;
             }
 
-            $mapping[$match[0][$k]] = $attributeValue;
+            $key = strtr($pattern, $mapping);
+        } else {
+            $key = $pattern;
         }
-
-        $key = strtr($pattern, $mapping);
 
         return $key;
     }
